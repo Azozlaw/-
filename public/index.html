@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>بروكادست - Wick Studio </title>
+
+    <style>
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background: #1a1a1a;
+
+            color: white;
+
+            margin: 0;
+
+            padding: 20px;
+
+            line-height: 1.6;
+
+        }
+
+        .container {
+
+            max-width: 800px;
+
+            margin: 0 auto;
+
+        }
+
+        .card {
+
+            background: #2a2a2a;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            margin-bottom: 20px;
+
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        }
+
+        h1, h2 {
+
+            color: #6e48aa;
+
+        }
+
+        .form-group {
+
+            margin-bottom: 15px;
+
+        }
+
+        label {
+
+            display: block;
+
+            margin-bottom: 5px;
+
+            font-weight: bold;
+
+        }
+
+        input, textarea, select {
+
+            width: 100%;
+
+            padding: 10px;
+
+            background: #333;
+
+            border: 1px solid #444;
+
+            border-radius: 5px;
+
+            color: white;
+
+            margin-bottom: 10px;
+
+        }
+
+        textarea {
+
+            min-height: 100px;
+
+            resize: vertical;
+
+        }
+
+        button {
+
+            background: #6e48aa;
+
+            color: white;
+
+            border: none;
+
+            padding: 12px 20px;
+
+            border-radius: 5px;
+
+            cursor: pointer;
+
+            font-size: 16px;
+
+            width: 100%;
+
+            transition: background 0.3s;
+
+            margin-top: 10px;
+
+        }
+
+        button:hover {
+
+            background: #7d5bbe;
+
+        }
+
+        .stats-grid {
+
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 15px;
+
+        }
+
+        .stat-item {
+
+            background: #333;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            text-align: center;
+
+        }
+
+        .stat-label {
+
+            display: block;
+
+            font-size: 14px;
+
+            color: #aaa;
+
+        }
+
+        .stat-value {
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            display: block;
+
+        }
+
+        .online .stat-value {
+
+            color: #4CAF50;
+
+        }
+
+        .offline .stat-value {
+
+            color: #f44336;
+
+        }
+
+        .bot-status {
+
+            padding: 10px;
+
+            border-radius: 5px;
+
+            margin-bottom: 15px;
+
+            text-align: center;
+
+        }
+
+        .online-status {
+
+            background: #4CAF50;
+
+        }
+
+        .offline-status {
+
+            background: #f44336;
+
+        }
+
+        .token-input {
+
+            font-family: monospace;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>بروكادست - ارسال رساله</h1>
+
+        
+
+        <div class="card">
+
+            <h2>إعدادات البوت</h2>
+
+            <div class="form-group">
+
+                <label for="botToken">توكن البوت:</label>
+
+                <input type="password" id="botToken" class="token-input" placeholder="أدخل توكن البوت هنا">
+
+            </div>
+
+            <button id="connectBtn">اتصال بالبوت</button>
+
+            <div id="botStatus" class="bot-status offline-status">البوت غير متصل</div>
+
+        </div>
+
+        
+
+        <div class="card">
+
+            <h2>إرسال رسائل</h2>
+
+            <div class="form-group">
+
+                <label for="serverId">أيدي السيرفر:</label>
+
+                <input type="text" id="serverId" placeholder="أدخل أيدي السيرفر">
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="message">الرسالة:</label>
+
+                <textarea id="message" placeholder="أدخل الرسالة"></textarea>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="sendMode">نوع الإرسال:</label>
+
+                <select id="sendMode">
+
+                    <option value="all">الكل</option>
+
+                    <option value="online">الأونلاين فقط</option>
+
+                    <option value="offline">الأوفلاين فقط</option>
+
+                </select>
+
+            </div>
+
+            <button id="sendBtn" disabled>إرسال الآن</button>
+
+        </div>
+
+        <div class="card">
+
+            <h2>الإحصائيات الحية</h2>
+
+            <div class="stats-grid">
+
+                <div class="stat-item">
+
+                    <span class="stat-label">الأعضاء الكلي</span>
+
+                    <span class="stat-value" id="totalMembers">0</span>
+
+                </div>
+
+                <div class="stat-item online">
+
+                    <span class="stat-label">الأونلاين</span>
+
+                    <span class="stat-value" id="onlineMembers">0</span>
+
+                </div>
+
+                <div class="stat-item offline">
+
+                    <span class="stat-label">الأوفلاين</span>
+
+                    <span class="stat-value" id="offlineMembers">0</span>
+
+                </div>
+
+                <div class="stat-item">
+
+                    <span class="stat-label">الرسائل المرسلة</span>
+
+                    <span class="stat-value" id="sentMessages">0</span>
+
+                </div>
+
+                <div class="stat-item">
+
+                    <span class="stat-label">الرسائل الفاشلة</span>
+
+                    <span class="stat-value" id="failedMessages">0</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+
+        const socket = io();
+
+        const stats = {
+
+            totalMembers: 0,
+
+            onlineMembers: 0,
+
+            offlineMembers: 0,
+
+            sentMessages: 0,
+
+            failedMessages: 0,
+
+            botConnected: false
+
+        };
+
+        const botTokenInput = document.getElementById('botToken');
+
+        const connectBtn = document.getElementById('connectBtn');
+
+        const botStatusDiv = document.getElementById('botStatus');
+
+        const serverIdInput = document.getElementById('serverId');
+
+        const messageInput = document.getElementById('message');
+
+        const sendModeSelect = document.getElementById('sendMode');
+
+        const sendBtn = document.getElementById('sendBtn');
+
+        const totalMembersEl = document.getElementById('totalMembers');
+
+        const onlineMembersEl = document.getElementById('onlineMembers');
+
+        const offlineMembersEl = document.getElementById('offlineMembers');
+
+        const sentMessagesEl = document.getElementById('sentMessages');
+
+        const failedMessagesEl = document.getElementById('failedMessages');
+
+        function updateStats() {
+
+            totalMembersEl.textContent = stats.totalMembers;
+
+            onlineMembersEl.textContent = stats.onlineMembers;
+
+            offlineMembersEl.textContent = stats.offlineMembers;
+
+            sentMessagesEl.textContent = stats.sentMessages;
+
+            failedMessagesEl.textContent = stats.failedMessages;
+
+            
+
+            if (stats.botConnected) {
+
+                botStatusDiv.textContent = "البوت متصل";
+
+                botStatusDiv.className = "bot-status online-status";
+
+                sendBtn.disabled = false;
+
+            } else {
+
+                botStatusDiv.textContent = "البوت غير متصل";
+
+                botStatusDiv.className = "bot-status offline-status";
+
+                sendBtn.disabled = true;
+
+            }
+
+        }
+
+        socket.on('stats_update', (newStats) => {
+
+            stats.totalMembers = newStats.totalMembers;
+
+            stats.onlineMembers = newStats.onlineMembers;
+
+            stats.offlineMembers = newStats.offlineMembers;
+
+            stats.sentMessages = newStats.sentMessages;
+
+            stats.failedMessages = newStats.failedMessages;
+
+            stats.botConnected = newStats.botConnected || false;
+
+            updateStats();
+
+        });
+
+        connectBtn.addEventListener('click', () => {
+
+            const botToken = botTokenInput.value.trim();
+
+            
+
+            if (!botToken) {
+
+                alert('الرجاء إدخال توكن البوت');
+
+                return;
+
+            }
+
+            
+
+            connectBtn.disabled = true;
+
+            connectBtn.textContent = 'جاري الاتصال...';
+
+            
+
+            socket.emit('connect_bot', { token: botToken });
+
+        });
+
+        socket.on('bot_connected', (status) => {
+
+            connectBtn.disabled = false;
+
+            connectBtn.textContent = 'اتصال بالبوت';
+
+            stats.botConnected = status.success;
+
+            updateStats();
+
+            
+
+            if (status.success) {
+
+                alert('تم الاتصال بالبوت بنجاح!');
+
+            } else {
+
+                alert('فشل الاتصال بالبوت: ' + (status.message || 'توكن غير صحيح'));
+
+            }
+
+        });
+
+        sendBtn.addEventListener('click', () => {
+
+            const serverId = serverIdInput.value.trim();
+
+            const message = messageInput.value.trim();
+
+            const mode = sendModeSelect.value;
+
+            
+
+            if (!serverId) {
+
+                alert('الرجاء إدخال أيدي السيرفر');
+
+                return;
+
+            }
+
+            
+
+            if (!message) {
+
+                alert('الرجاء إدخال الرسالة');
+
+                return;
+
+            }
+
+            
+
+            sendBtn.disabled = true;
+
+            sendBtn.textContent = 'جاري الإرسال...';
+
+            
+
+            socket.emit('send_messages', {
+
+                serverId,
+
+                message,
+
+                mode
+
+            });
+
+        });
+
+        socket.on('send_complete', (result) => {
+
+            sendBtn.disabled = false;
+
+            sendBtn.textContent = 'إرسال الآن';
+
+            alert(`تم إرسال ${result.success} رسالة بنجاح! ${result.failed > 0 ? `(فشل ${result.failed})` : ''}`);
+
+        });
+
+        updateStats();
+
+    </script>
+
+</body>
+
+</html>
